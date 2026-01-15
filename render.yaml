@@ -5,8 +5,8 @@ services:
     env: python
     region: oregon  # Change to your preferred region
     plan: free  # Change to 'starter' or 'standard' for production
-    buildCommand: pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput
-    startCommand: gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: chmod +x start.sh && ./start.sh
     healthCheckPath: /api/
     envVars:
       - key: SECRET_KEY
