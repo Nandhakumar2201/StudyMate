@@ -151,8 +151,10 @@ SIMPLE_JWT = {
 # CORS Settings
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173'
+    default='http://localhost:5173,http://127.0.0.1:5173,https://studymate-1-xoq6.onrender.com'
 ).split(',')
+# Clean up any empty strings and strip whitespace
+CORS_ALLOWED_ORIGINS = [origin.strip() for origin in CORS_ALLOWED_ORIGINS if origin.strip()]
 
 CORS_ALLOW_CREDENTIALS = True
 
