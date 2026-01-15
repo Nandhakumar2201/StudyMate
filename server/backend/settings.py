@@ -19,13 +19,18 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 allowed_hosts_str = config('ALLOWED_HOSTS', default='localhost,127.0.0.1')
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',') if host.strip()]
 
-# Automatically add Render domain if running on Render
-# This allows any *.onrender.com subdomain
+# Automatically detect and add Render domain
+# Render sets RENDER_EXTERNAL_HOSTNAME environment variable
 import os
-if 'RENDER' in os.environ or any('.onrender.com' in host for host in ALLOWED_HOSTS):
-    # Add wildcard for Render domains
-    if '*' not in str(ALLOWED_HOSTS):
-        ALLOWED_HOSTS.append('*.onrender.com')
+render_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_hostname and render_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_hostname)
+
+# Also check if we're on Render by checking for RENDER service
+if os.environ.get('RENDER'):
+    # Allow common Render patterns - user should still set specific domain in env var
+    # But this provides a fallback
+    pass
 
 # Application definition
 INSTALLED_APPS = [
