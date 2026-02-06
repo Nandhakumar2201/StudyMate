@@ -1,4 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://studymate-backend-swpd.onrender.com/api'
+const BACKEND_DISPLAY_URL = API_BASE_URL.replace(/\/api\/?$/, '') || 'http://localhost:8000'
 
 // Helper function to get auth token
 const getAuthToken = () => {
@@ -35,7 +36,7 @@ export const api = {
     if (!contentType.includes('application/json')) {
       // Server returned HTML (likely an error page or backend not running)
       if (response.status === 404) {
-        throw new Error('Backend endpoint not found. Please check if the Django server is running on http://localhost:8000')
+        throw new Error(`Backend endpoint not found. Please check if the Django server is running on ${BACKEND_DISPLAY_URL}`)
       }
       if (response.status >= 500) {
         throw new Error('Server error. Please check if the backend server is running correctly.')
@@ -80,7 +81,7 @@ export const api = {
       }
       // Network error
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error('Cannot connect to backend server. Please make sure Django is running on http://localhost:8000')
+        throw new Error(`Cannot connect to backend server. Please make sure Django is running on ${BACKEND_DISPLAY_URL}`)
       }
       throw error
     }
@@ -120,7 +121,7 @@ export const api = {
       }
       // Network error
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error('Cannot connect to backend server. Please make sure Django is running on http://localhost:8000')
+        throw new Error(`Cannot connect to backend server. Please make sure Django is running on ${BACKEND_DISPLAY_URL}`)
       }
       throw error
     }

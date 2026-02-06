@@ -38,13 +38,17 @@ function StudentDashboard() {
         api.getDepartments(),
         api.getYears()
       ])
-      // Ensure we always have arrays
-      setDepartments(Array.isArray(deptsData.results) ? deptsData.results : (Array.isArray(deptsData) ? deptsData : []))
-      setYears(Array.isArray(yearsData.results) ? yearsData.results : (Array.isArray(yearsData) ? yearsData : []))
-      // Materials will be loaded by the useEffect hook when component mounts
+      const depts = Array.isArray(deptsData.results) ? deptsData.results : (Array.isArray(deptsData) ? deptsData : [])
+      const yrs = Array.isArray(yearsData.results) ? yearsData.results : (Array.isArray(yearsData) ? yearsData : [])
+      setDepartments(depts)
+      setYears(yrs)
+      // Default to first department and first year so dropdowns show options by default
+      if (depts.length > 0 && yrs.length > 0) {
+        setSelectedDepartment(String(depts[0].id))
+        setSelectedYear(String(yrs[0].id))
+      }
     } catch (error) {
       console.error('Error loading initial data:', error)
-      // Set empty arrays on error to prevent map errors
       setDepartments([])
       setYears([])
     }
@@ -83,7 +87,11 @@ function StudentDashboard() {
   const loadSemesters = async (deptId, yearId) => {
     try {
       const data = await api.getSemesters({ department: deptId, year: yearId })
-      setSemesters(data.results || data)
+      const list = Array.isArray(data.results) ? data.results : (Array.isArray(data) ? data : [])
+      setSemesters(list)
+      if (list.length > 0 && !selectedSemester) {
+        setSelectedSemester(String(list[0].id))
+      }
     } catch (error) {
       console.error('Error loading semesters:', error)
     }
@@ -104,7 +112,11 @@ function StudentDashboard() {
   const loadSubjects = async (semesterId) => {
     try {
       const data = await api.getSubjects({ semester: semesterId })
-      setSubjects(data.results || data)
+      const list = Array.isArray(data.results) ? data.results : (Array.isArray(data) ? data : [])
+      setSubjects(list)
+      if (list.length > 0 && !selectedSubject) {
+        setSelectedSubject(String(list[0].id))
+      }
     } catch (error) {
       console.error('Error loading subjects:', error)
     }

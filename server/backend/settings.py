@@ -15,6 +15,11 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
+# Static admin: if login matches these, treat as admin (user is auto-created in DB for JWT)
+STATIC_ADMIN_USERNAME = config('STATIC_ADMIN_USERNAME', default='Admin')
+STATIC_ADMIN_PASSWORD = config('STATIC_ADMIN_PASSWORD', default='jacsice@Admin')
+STATIC_ADMIN_EMAIL = config('STATIC_ADMIN_EMAIL', default='jacsiceadmin@gmail.com')
+
 # ALLOWED_HOSTS - support both comma-separated string and list
 allowed_hosts_str = config('ALLOWED_HOSTS', default='localhost,127.0.0.1')
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',') if host.strip()]

@@ -51,16 +51,19 @@ function AdminDashboard() {
         api.getDepartments(),
         api.getYears()
       ])
-      // Ensure we always have arrays
-      setDepartments(Array.isArray(deptsData.results) ? deptsData.results : (Array.isArray(deptsData) ? deptsData : []))
-      setYears(Array.isArray(yearsData.results) ? yearsData.results : (Array.isArray(yearsData) ? yearsData : []))
+      const depts = Array.isArray(deptsData.results) ? deptsData.results : (Array.isArray(deptsData) ? deptsData : [])
+      const yrs = Array.isArray(yearsData.results) ? yearsData.results : (Array.isArray(yearsData) ? yearsData : [])
+      setDepartments(depts)
+      setYears(yrs)
+      // Default to first department and first year so dropdowns show options by default
+      if (depts.length > 0 && yrs.length > 0) {
+        setSelectedDepartment(String(depts[0].id))
+        setSelectedYear(String(yrs[0].id))
+      }
     } catch (error) {
       console.error('Error loading initial data:', error)
-      // Set empty arrays on error to prevent map errors
       setDepartments([])
       setYears([])
-      
-      // If authentication error, redirect to login
       if (error.message && error.message.includes('Authentication required')) {
         localStorage.removeItem('isAuthenticated')
         localStorage.removeItem('userRole')
@@ -96,7 +99,12 @@ function AdminDashboard() {
   const loadSemesters = async (deptId, yearId) => {
     try {
       const data = await api.getSemesters({ department: deptId, year: yearId })
-      setSemesters(data.results || data)
+      const list = Array.isArray(data.results) ? data.results : (Array.isArray(data) ? data : [])
+      setSemesters(list)
+      // Default to first semester when list loads and none selected
+      if (list.length > 0 && !selectedSemester) {
+        setSelectedSemester(String(list[0].id))
+      }
     } catch (error) {
       console.error('Error loading semesters:', error)
     }
@@ -114,7 +122,12 @@ function AdminDashboard() {
   const loadSubjects = async (semesterId) => {
     try {
       const data = await api.getSubjects({ semester: semesterId })
-      setSubjects(data.results || data)
+      const list = Array.isArray(data.results) ? data.results : (Array.isArray(data) ? data : [])
+      setSubjects(list)
+      // Default to first subject when list loads and none selected
+      if (list.length > 0 && !selectedSubject) {
+        setSelectedSubject(String(list[0].id))
+      }
     } catch (error) {
       console.error('Error loading subjects:', error)
     }
@@ -312,7 +325,7 @@ function AdminDashboard() {
               {[
                 { id: 'materials', label: 'Study Materials', icon: '📚' },
                 { id: 'students', label: 'Manage Students', icon: '👥' },
-                { id: 'structure', label: 'Academic Structure', icon: '🏗️' }
+                // { id: 'structure', label: 'Academic Structure', icon: '🏗️' }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -587,9 +600,9 @@ function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {students.map((student) => (
+                      {students.map((student, index) => (
                         <tr key={student.id} className="border-b border-gray-100 hover:bg-gray-50">
-                          <td className="py-3 px-4 text-gray-600">{student.id}</td>
+                          <td className="py-3 px-4 text-gray-600">{index + 1}</td>
                           <td className="py-3 px-4 text-gray-900 font-medium">{student.username}</td>
                           <td className="py-3 px-4 text-gray-600">{student.email}</td>
                           <td className="py-3 px-4 text-gray-600">
@@ -619,12 +632,12 @@ function AdminDashboard() {
         )}
 
         {/* Structure Tab */}
-        {activeTab === 'structure' && (
+        {/* {activeTab === 'structure' && (
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Academic Structure</h3>
             <p className="text-gray-600">Academic structure management functionality coming soon...</p>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   )
